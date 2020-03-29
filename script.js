@@ -1,49 +1,8 @@
-// ------------------------
-// CONFIGURATION
-// ------------------------
-
-var Config = {
-  outerMargin: 48,
-  innerMargin: 4,
-  backColor: "rgb(64,208,192)",
-  squareColor: "rgb(255,255,255)",
-  penColor: "rgb(48,48,48)",
-  penHoverColor: "rgb(208,208,208)",
-  penWinColor: "rgba(255,48,48,0.6)",
-  penWidth: 8,
-  penWinWidth: 12,
-};
-
-
-
-// ------------------------
-// GLOBAL VARS
-// ------------------------
-
-var cvs,
-    ctx,
-    pageW,
-    pageH,
-    boardSize,
-    boardL,
-    boardT,
-    sqSize,
-    sqOffset,
-    squares,
-    playerTurn,
-    playerFirst = 0,
-    mousedIndex,
-    gameStatus;
-
-
-
-// ------------------------
-// SETUP / INITIALIZATION
-// ------------------------
-
+//create canvas and init screen for the game !! 
+var cvs,ctx;
 function CreateCanvas(){
-  var body = document.getElementsByTagName('body')[0];
-  
+  var body = document.getElementById('body');
+
   cvs = document.createElement('canvas');
   cvs.style.position = 'absolute';
   cvs.style.top = cvs.style.left = cvs.style.bottom = cvs.style.right = 0;
@@ -51,22 +10,24 @@ function CreateCanvas(){
   ctx = cvs.getContext('2d');
   body.appendChild(cvs);  
 }
-
-
+var pageW, pageH, boardSize, boardL, boardT, sqSize, sqOffset;
 function SetCanvasSize(){
   pageW = cvs.width = window.innerWidth;
   pageH = cvs.height = window.innerHeight;
   
-  boardSize = Math.min(pageW, pageH) - 2*Config.outerMargin;
-  sqSize = Math.floor((boardSize - 2*Config.innerMargin)/3);
-  sqOffset = sqSize+Config.innerMargin;
+  boardSize = Math.min(pageW, pageH) - 100;
+
+
+  sqSize = Math.floor((boardSize)/3);
+  sqOffset = sqSize+4
   
-  boardSize = 3*sqSize + 2*Config.innerMargin;
+  boardSize = 3*sqSize +8;
+
+  
   boardL = Math.floor(pageW/2 - boardSize/2);
   boardT = Math.floor(pageH/2 - boardSize/2);
 }
-
-
+var playerTurn, playerFirst = 1, mousedIndex, gameStatus;
 function Init(){
   var i;
   
@@ -80,23 +41,6 @@ function Init(){
   playerFirst = 1 - playerFirst;
   mousedIndex = -1;
 
-  ChangeTurn();
-}
-
-
-
-// ------------------------
-// CORE FUNCTIONS
-// ------------------------
-
-function AddMove(index,player){
-  squares[index] = player;
-  gameStatus = GetOutcomes(squares);
-  ChangeTurn();
-}
-
-
-function ChangeTurn(){
   if (gameStatus.winner === null){
     playerTurn = 1 - playerTurn;
     if (playerTurn === 1){      
@@ -108,6 +52,24 @@ function ChangeTurn(){
 }
 
 
+// ------------------------
+// CORE FUNCTIONS
+// ------------------------
+
+function AddMove(index,player){
+  squares[index] = player;
+  gameStatus = GetOutcomes(squares);
+  if (gameStatus.winner === null){
+    playerTurn = 1 - playerTurn;
+    if (playerTurn === 1){      
+      AIMove(squares,playerTurn);
+    }
+  }
+  mousedIndex = -1;
+  Draw();
+}
+
+// not done 
 function CheckMousePos(mX,mY,click){
   var left,
       top,
@@ -119,23 +81,20 @@ function CheckMousePos(mX,mY,click){
     for(j = 0; j < 3; j++){
       left = boardL + i*sqOffset;
       top = boardT + j*sqOffset;     
-      if (squares[CoordsToIndex(i,j)] === null && 
-          PointInRect(mX, mY, left, top, sqSize, sqSize)){        
-        index = CoordsToIndex(i,j);
+      if (squares[i + 3*j] === null && 
+        (mX>left && mX<left+sqSize && mY>top && mY<top+sqSize) ){        
+        index =i + 3*j;
       }
     }
   }
   
   cvs.style.cursor = (index > -1)? 'pointer' : 'default';
-  if (mousedIndex !== index){
-    mousedIndex = index;
-    Draw();
-  }
-  
+    
   if (click && squares[index]===null){
     AddMove(index, playerTurn);
   }  
 }
+
 
 
 function FindMoves(board){
@@ -150,45 +109,45 @@ function FindMoves(board){
   return (moves.length > 0)? moves : null;
 }
 
-
 function GetOutcomes(board){
-  var i,
-      openSquares;
+  var i,openSquares;
   
   // check for win condition along horizontal and vertical rows
   for(i = 0; i < 3; i++){
-    if (board[CoordsToIndex(i,0)] !== null && 
-        board[CoordsToIndex(i,0)] === board[CoordsToIndex(i,1)] &&
-        board[CoordsToIndex(i,0)] === board[CoordsToIndex(i,2)]){
+    if (board[i] !== null && 
+        board[i] === board[i+3] &&
+        board[i] === board[i+6]){
       return {
-        winner: board[CoordsToIndex(i,0)], 
+        winner: board[i], 
         squares: [ {x:i,y:0}, {x:i,y:1}, {x:i,y:2} ]
       };
     }
-    if (board[CoordsToIndex(0,i)] !== null && 
-        board[CoordsToIndex(0,i)] === board[CoordsToIndex(1,i)] &&
-        board[CoordsToIndex(0,i)] === board[CoordsToIndex(2,i)]){
+
+    
+    if (board[3*i] !== null && 
+        board[3*i] === board[1+3*i] &&
+        board[3*i] === board[2+3*i]){
       return {
-        winner: board[CoordsToIndex(0,i)], 
+        winner: board[3*i], 
         squares: [ {x:0,y:i}, {x:1,y:i}, {x:2,y:i} ]
       };
     }
   }
   
   // check for win condition along diagonals
-  if (board[CoordsToIndex(0,0)] !== null &&
-      board[CoordsToIndex(0,0)] === board[CoordsToIndex(1,1)] &&
-      board[CoordsToIndex(0,0)] === board[CoordsToIndex(2,2)]){
+  if (board[0] !== null &&
+      board[0] === board[4] &&
+      board[0] === board[8]){
     return {
-      winner: board[CoordsToIndex(0,0)], 
+      winner: board[0], 
       squares: [ {x:0,y:0}, {x:1,y:1}, {x:2,y:2} ]
     };
   }
-  if (board[CoordsToIndex(0,2)] !== null &&
-      board[CoordsToIndex(0,2)] === board[CoordsToIndex(1,1)] &&
-      board[CoordsToIndex(0,2)] === board[CoordsToIndex(2,0)]){
+  if (board[6] !== null &&
+      board[6] === board[4] &&
+      board[6] === board[2]){
     return {
-      winner: board[CoordsToIndex(0,2)], 
+      winner: board[6], 
       squares: [ {x:0,y:2}, {x:1,y:1}, {x:2,y:0} ]
     };
   }
@@ -210,6 +169,9 @@ function GetOutcomes(board){
     };
   }
 }
+
+
+
 
 
 
@@ -239,7 +201,6 @@ function AIMove(board, player){
   AddMove(bestMove,player);
 };
 
-
 function AlphaBeta(board, a, b, player, maximizingPlayer){
   var i,
       outcome = GetOutcomes(board),
@@ -252,9 +213,11 @@ function AlphaBeta(board, a, b, player, maximizingPlayer){
   }
 
   if (maximizingPlayer){
+
     for(i = 0; i < outcome.squares.length; i++){
       childBoard = board.slice(0);
       childBoard[outcome.squares[i]] = player;
+     
       a = Math.max(a, AlphaBeta(childBoard, a, b, player, false));
       if(b <= a){
         break; //b cut off
@@ -277,38 +240,23 @@ function AlphaBeta(board, a, b, player, maximizingPlayer){
 
 
 
-// ------------------------
-// DRAW FUNCTIONS
-// ------------------------
+// Drawing functions
 
 function Draw(){
-  var left,
-      top,
-      isHover,
-      i,
-      j,
-      index;
-  
-  ctx.fillStyle = Config.backColor;
+  var i,j ;
+  ctx.fillStyle = "rgb(64,208,192)";
   ctx.fillRect(0, 0, pageW, pageH);  
-  
   for(i = 0; i < 3; i++){
     for(j = 0; j < 3; j++){
-      left = boardL + i*sqOffset;
-      top = boardT + j*sqOffset;
-      index = CoordsToIndex(i,j);
-      isHover = (index === mousedIndex);      
-      
-      DrawSquare(squares[index], left, top, sqSize, isHover);
+      DrawSquare(squares[i+3*j],  boardL + i*sqOffset ,
+                 boardT + j*sqOffset, sqSize,  (i+3*j === mousedIndex));
     }
   }
-  
   if (gameStatus.winner === 0 || gameStatus.winner === 1){ DrawWinnerLine(); }
 }
 
-
 function DrawSquare(player, left, top, size, isMoused){
-  ctx.fillStyle = Config.squareColor;
+  ctx.fillStyle = "rgb(255,255,255)" ;
   ctx.fillRect(left, top, sqSize, sqSize);
   
   if (player === 0 || (playerTurn === 0 && isMoused)){
@@ -320,11 +268,10 @@ function DrawSquare(player, left, top, size, isMoused){
   else {
     return;
   }
-  ctx.lineWidth = (sqSize/100) * Config.penWidth;
-  ctx.strokeStyle = (isMoused && player===null)? Config.penHoverColor : Config.penColor;
+  ctx.lineWidth = (sqSize/10) ;
+  ctx.strokeStyle ="rgb(48,48,48)";
   ctx.stroke();
 }
-
 
 function DrawX(left, top, size){
   var x1 = left + 0.2*size,
@@ -339,7 +286,6 @@ function DrawX(left, top, size){
   ctx.lineTo(x2, y1);
 }
 
-
 function DrawO(left, top, size){
   var x = left + 0.5*size,
       y = top + 0.5*size,
@@ -348,7 +294,6 @@ function DrawO(left, top, size){
   ctx.beginPath();
   ctx.arc(x, y, rad, 0, 2*Math.PI, false);
 }
-
 
 function DrawWinnerLine(){
   var x1 = boardL + gameStatus.squares[0].x*sqOffset + 0.5*sqSize,      
@@ -368,70 +313,22 @@ function DrawWinnerLine(){
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   
-  ctx.lineWidth = (sqSize/100) * Config.penWinWidth;
-  ctx.strokeStyle = Config.penWinColor;
+  ctx.lineWidth = (sqSize/10);
+  ctx.strokeStyle = "rgba(255,48,48,0.6)";
   ctx.stroke();
 }
 
 
 
-// ------------------------
-// HELPER FUNCTIONS
-// ------------------------
-
-function PointInRect(pX, pY, rL, rT, rW, rH){
-  return (pX>rL && pX<rL+rW && pY>rT && pY<rT+rW);
-}
+window.addEventListener('load',()=>{ CreateCanvas(); SetCanvasSize(); Init(); },false);
 
 
-function CoordsToIndex(x,y){
-  return x + 3*y;
-}
+window.addEventListener('resize',()=>{ SetCanvasSize(); Draw(); },false);
 
 
-
-// ------------------------
-// EVENT HANDLERS/LISTENERS
-// ------------------------
-
-function OnLoad(){
-  CreateCanvas();
-  SetCanvasSize();
-  Init();
-}
-
-function OnResize(){
-  SetCanvasSize();
-  Draw();
-}
-
-function OnMouseMove(e){
-  if (playerTurn === 0){
-    CheckMousePos(e.clientX, e.clientY);
-  }
-}
-
-function OnMouseDown(e){
-  if (gameStatus.winner !== null){
-    Init();
-  }
-  else if (playerTurn === 0){
-    CheckMousePos(e.clientX, e.clientY, true);
-  }
-}
-
-function OnKeyDown(e){
-  var key = event.keyCode || event.which;
-  switch (key){
-    case 27:
-    case 82: Init(); break;
-    default: break;
-  }
-}
+window.addEventListener('mousemove',(e)=>{ if (playerTurn === 0){CheckMousePos(e.clientX, e.clientY);}},false);
 
 
-window.addEventListener('load',OnLoad,false);
-window.addEventListener('resize',OnResize,false);
-window.addEventListener('mousemove',OnMouseMove,false);
-window.addEventListener('mousedown',OnMouseDown,false);
-window.addEventListener('keydown',OnKeyDown,false);
+window.addEventListener('mousedown',(e)=>{
+if (gameStatus.winner !== null){ Init();} else if (playerTurn === 0){ CheckMousePos(e.clientX, e.clientY, true); }}
+,false);
