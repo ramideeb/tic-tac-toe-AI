@@ -206,11 +206,18 @@ function AlphaBeta(board, a, b, player, maximizingPlayer){
       outcome = GetOutcomes(board),
       childBoard;
 
+
   if (outcome.winner !== null){
+
     if (outcome.winner === player){ return 1; }
+
     else if (outcome.winner === 1-player){ return -1; }
+
     else{ return 0; }
+
   }
+
+
 
   if (maximizingPlayer){
 
@@ -225,7 +232,9 @@ function AlphaBeta(board, a, b, player, maximizingPlayer){
     }
     return a;   
   }
+
   else{
+
     for(i = 0; i < outcome.squares.length; i++){
       childBoard = board.slice(0);
       childBoard[outcome.squares[i]] = 1-player;
@@ -236,6 +245,8 @@ function AlphaBeta(board, a, b, player, maximizingPlayer){
     }
     return b;
   }
+
+
 };
 
 
