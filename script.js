@@ -1,4 +1,4 @@
-var twoPlayers=0;
+var twoPlayers = 0;
 
 var cvs,ctx;
 function CreateCanvas(){
@@ -365,8 +365,8 @@ function DrawWinnerLine(){
 
 var start=0;
 function p2(){ 
-  
-  CreateCanvas(); SetCanvasSize(); Init() ; start=1; twoPlayers=1;
+  twoPlayers=1;
+  CreateCanvas(); SetCanvasSize(); Init() ; start=1; 
   
 }
 
