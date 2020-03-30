@@ -1,32 +1,34 @@
-//create canvas and init screen for the game !! 
+var twoPlayers=0;
+
 var cvs,ctx;
 function CreateCanvas(){
   var body = document.getElementById('body');
 
   cvs = document.createElement('canvas');
+
   cvs.style.position = 'absolute';
   cvs.style.top = cvs.style.left = cvs.style.bottom = cvs.style.right = 0;
   
   ctx = cvs.getContext('2d');
   body.appendChild(cvs);  
 }
+
+
+//done
 var pageW, pageH, boardSize, boardL, boardT, sqSize, sqOffset;
 function SetCanvasSize(){
   pageW = cvs.width = window.innerWidth;
   pageH = cvs.height = window.innerHeight;
-  
-  boardSize = Math.min(pageW, pageH) - 100;
-
-
+  boardSize = Math.min(pageW, pageH) -100;
   sqSize = Math.floor((boardSize)/3);
-  sqOffset = sqSize+4
-  
-  boardSize = 3*sqSize +8;
-
-  
+  sqOffset = sqSize+5;
   boardL = Math.floor(pageW/2 - boardSize/2);
   boardT = Math.floor(pageH/2 - boardSize/2);
+
 }
+
+
+//done
 var playerTurn, playerFirst = 1, mousedIndex, gameStatus;
 function Init(){
   var i;
@@ -36,67 +38,76 @@ function Init(){
     squares[i] = null;
   }
   
-  gameStatus = { winner:null }; 
+  gameStatus = { winner:null};  
   playerTurn = 1 - playerFirst;
   playerFirst = 1 - playerFirst;
-  mousedIndex = -1;
 
+
+  
   if (gameStatus.winner === null){
     playerTurn = 1 - playerTurn;
-    if (playerTurn === 1){      
+   
+    if (playerTurn === 1 && twoPlayers==0){      
       AIMove(squares,playerTurn);
     }
+    
   }
-  mousedIndex = -1;
+
   Draw();
 }
 
 
-// ------------------------
-// CORE FUNCTIONS
-// ------------------------
 
+//done
 function AddMove(index,player){
+
   squares[index] = player;
+  console.log(squares)
+
   gameStatus = GetOutcomes(squares);
+
   if (gameStatus.winner === null){
+    
     playerTurn = 1 - playerTurn;
-    if (playerTurn === 1){      
+  
+    if (playerTurn === 1 && twoPlayers==0){      
       AIMove(squares,playerTurn);
     }
+
   }
-  mousedIndex = -1;
+ 
   Draw();
 }
 
-// not done 
+//done 
 function CheckMousePos(mX,mY,click){
-  var left,
-      top,
-      index = -1,
-      i,
-      j;
+  var left, top, index, i, j;
   
   for(i = 0; i < 3; i++){
     for(j = 0; j < 3; j++){
+
       left = boardL + i*sqOffset;
       top = boardT + j*sqOffset;     
-      if (squares[i + 3*j] === null && 
-        (mX>left && mX<left+sqSize && mY>top && mY<top+sqSize) ){        
-        index =i + 3*j;
+
+      if (squares[i + 3*j] === null && (mX>left && mX<left+sqSize && mY>top && mY<top+sqSize) ){        
+        index = i + 3*j;
       }
+
+
     }
   }
   
   cvs.style.cursor = (index > -1)? 'pointer' : 'default';
-    
-  if (click && squares[index]===null){
+
+
+  if ( click && squares[index] === null ){
     AddMove(index, playerTurn);
   }  
+
+  
 }
 
-
-
+//done
 function FindMoves(board){
   var moves = [],
       i;
@@ -108,9 +119,9 @@ function FindMoves(board){
   }  
   return (moves.length > 0)? moves : null;
 }
-
+//done
 function GetOutcomes(board){
-  var i,openSquares;
+  var i , openSquares;
   
   // check for win condition along horizontal and vertical rows
   for(i = 0; i < 3; i++){
@@ -132,7 +143,10 @@ function GetOutcomes(board){
         squares: [ {x:0,y:i}, {x:1,y:i}, {x:2,y:i} ]
       };
     }
+
   }
+
+
   
   // check for win condition along diagonals
   if (board[0] !== null &&
@@ -151,33 +165,37 @@ function GetOutcomes(board){
       squares: [ {x:0,y:2}, {x:1,y:1}, {x:2,y:0} ]
     };
   }
-  
-  // if no winner found, check for tie
+
+
+
+
   openSquares = FindMoves(board);
   
   // if moves found, game is not tied
   if (openSquares){
+
     return {
       winner: null,
       squares: openSquares
     };
+
   }
+
   else{
+
     return { 
       winner: -1,
       squares: null
     };
+
   }
 }
-
-
-
-
 
 
 // ------------------------
 // AI FUNCTIONS/OBJECTS
 // ------------------------
+
 
 function AIMove(board, player){
   var outcomes = GetOutcomes(board),
@@ -246,29 +264,38 @@ function AlphaBeta(board, a, b, player, maximizingPlayer){
     return b;
   }
 
-
 };
+
 
 
 
 // Drawing functions
 
 function Draw(){
-  var i,j ;
+ 
   ctx.fillStyle = "rgb(64,208,192)";
   ctx.fillRect(0, 0, pageW, pageH);  
+
+  var i,j ;
   for(i = 0; i < 3; i++){
     for(j = 0; j < 3; j++){
+
       DrawSquare(squares[i+3*j],  boardL + i*sqOffset ,
                  boardT + j*sqOffset, sqSize,  (i+3*j === mousedIndex));
-    }
+    
+                }
   }
+
+
   if (gameStatus.winner === 0 || gameStatus.winner === 1){ DrawWinnerLine(); }
 }
 
+
+//not done
 function DrawSquare(player, left, top, size, isMoused){
+
   ctx.fillStyle = "rgb(255,255,255)" ;
-  ctx.fillRect(left, top, sqSize, sqSize);
+  ctx.fillRect(left, top, size, size);
   
   if (player === 0 || (playerTurn === 0 && isMoused)){
     DrawX(left, top, size);
@@ -279,11 +306,15 @@ function DrawSquare(player, left, top, size, isMoused){
   else {
     return;
   }
+
   ctx.lineWidth = (sqSize/10) ;
   ctx.strokeStyle ="rgb(48,48,48)";
   ctx.stroke();
+
 }
 
+
+//done
 function DrawX(left, top, size){
   var x1 = left + 0.2*size,
       x2 = left + 0.8*size,
@@ -295,8 +326,11 @@ function DrawX(left, top, size){
   ctx.lineTo(x2, y2);
   ctx.moveTo(x1, y2);
   ctx.lineTo(x2, y1);
+  
 }
 
+
+//done (except last function )
 function DrawO(left, top, size){
   var x = left + 0.5*size,
       y = top + 0.5*size,
@@ -304,42 +338,91 @@ function DrawO(left, top, size){
   
   ctx.beginPath();
   ctx.arc(x, y, rad, 0, 2*Math.PI, false);
+
 }
 
+//done
 function DrawWinnerLine(){
-  var x1 = boardL + gameStatus.squares[0].x*sqOffset + 0.5*sqSize,      
-      x2 = boardL + gameStatus.squares[2].x*sqOffset + 0.5*sqSize,      
-      y1 = boardT + gameStatus.squares[0].y*sqOffset + 0.5*sqSize,
-      y2 = boardT + gameStatus.squares[2].y*sqOffset + 0.5*sqSize,
-      xMod = 0.2*(x2-x1),
-      yMod = 0.2*(y2-y1);
-  
-  x1 -= xMod;
-  x2 += xMod;
-  
-  y1 -= yMod;
-  y2 += yMod;
-  
+  x1 = boardL + gameStatus.squares[0].x*sqSize + 0.5*sqSize;   
+  x2 = boardL + gameStatus.squares[2].x*sqSize + 0.5*sqSize;      
+  y1 = boardT + gameStatus.squares[0].y*sqSize + 0.5*sqSize;
+  y2 = boardT + gameStatus.squares[2].y*sqSize + 0.5*sqSize;
+
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   
-  ctx.lineWidth = (sqSize/10);
+  ctx.lineWidth = sqSize/10;
   ctx.strokeStyle = "rgba(255,48,48,0.6)";
   ctx.stroke();
+
 }
 
 
 
-window.addEventListener('load',()=>{ CreateCanvas(); SetCanvasSize(); Init(); },false);
+
+// all done 
+
+var start=0;
+function p2(){ 
+  
+  CreateCanvas(); SetCanvasSize(); Init() ; start=1; twoPlayers=1;
+  
+}
+
+function hard(){ 
+  
+  CreateCanvas(); SetCanvasSize(); Init() ; start=1; ;
+  
+}
+
+function medium (){ 
+  
+  CreateCanvas(); SetCanvasSize(); Init() ; start=1;
+  
+}
 
 
-window.addEventListener('resize',()=>{ SetCanvasSize(); Draw(); },false);
+
+function easy(){ 
+  
+  CreateCanvas(); SetCanvasSize(); Init() ; start=1; 
+  
+}
 
 
-window.addEventListener('mousemove',(e)=>{ if (playerTurn === 0){CheckMousePos(e.clientX, e.clientY);}},false);
+
+
+
+window.addEventListener('resize',()=>{ 
+  if(start==1){
+  SetCanvasSize(); Draw(); 
+  }
+
+}
+,false);
+
+
+window.addEventListener('mousemove',(e)=>{
+
+if(start==1){
+
+   if ((playerTurn === 0 && twoPlayers==0 )|| twoPlayers==1){
+  
+  CheckMousePos(e.clientX, e.clientY);}
+   }
+
+
+}
+,false);
 
 
 window.addEventListener('mousedown',(e)=>{
-if (gameStatus.winner !== null){ Init();} else if (playerTurn === 0){ CheckMousePos(e.clientX, e.clientY, true); }}
+  if(start==1){
+if (gameStatus.winner !== null){ 
+  Init();} 
+  else 
+  if ( (playerTurn === 0 && twoPlayers==0 )|| twoPlayers==1 )
+  { 
+    CheckMousePos(e.clientX, e.clientY, true);} }} 
 ,false);
