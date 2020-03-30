@@ -1,4 +1,6 @@
+
 var twoPlayers = 0;
+var leve1lSt;
 
 var cvs,ctx;
 function CreateCanvas(){
@@ -78,6 +80,7 @@ function AddMove(index,player){
  
   Draw();
 }
+
 
 //done 
 function CheckMousePos(mX,mY,click){
@@ -192,11 +195,6 @@ function GetOutcomes(board){
 }
 
 
-// ------------------------
-// AI FUNCTIONS/OBJECTS
-// ------------------------
-
-
 function AIMove(board, player){
   var outcomes = GetOutcomes(board),
       bestMove,
@@ -208,7 +206,22 @@ function AIMove(board, player){
   for(i = 0; i < outcomes.squares.length; i++){      
     testBoard = board.slice(0);
     testBoard[outcomes.squares[i]] = player;
-    testAlphaBeta = AlphaBeta(testBoard, -999, 999, player, false);
+
+
+    if(leve1lSt===2){
+    testAlphaBeta = AlphaBeta( outcomes.squares.length-1 ,testBoard, -999, 999, player, false);
+    }
+    else if(leve1lSt===1){
+      testAlphaBeta = AlphaBeta( outcomes.squares.length-1 ,testBoard, -999, 999, player, false);
+
+    }
+    else{
+    testAlphaBeta = AlphaBeta( 0,testBoard, -999, 999, player, false);
+
+    }
+
+
+
 
     if (testAlphaBeta > bestAlphaBeta){
       bestMove = outcomes.squares[i];
@@ -219,51 +232,97 @@ function AIMove(board, player){
   AddMove(bestMove,player);
 };
 
-function AlphaBeta(board, a, b, player, maximizingPlayer){
-  var i,
-      outcome = GetOutcomes(board),
-      childBoard;
+function AlphaBeta(levels,board, a, b, player, maximizingPlayer){
+  var i,outcome = GetOutcomes(board),childBoard; 
 
 
-  if (outcome.winner !== null){
+     
+  if (outcome.winner !== null || levels<1){
 
-    if (outcome.winner === player){ return 1; }
+    if (outcome.winner === player){ return 100; }
 
-    else if (outcome.winner === 1-player){ return -1; }
+    else if (outcome.winner === 1-player){ return -100; }
 
-    else{ return 0; }
-
+    else{ 
+    
+      return 0; 
+    }
   }
 
-
-
   if (maximizingPlayer){
+
+    if(leve1lSt===1) {
 
     for(i = 0; i < outcome.squares.length; i++){
       childBoard = board.slice(0);
       childBoard[outcome.squares[i]] = player;
      
-      a = Math.max(a, AlphaBeta(childBoard, a, b, player, false));
+      a = Math.max(a, AlphaBeta(levels-1,childBoard, a, b, player, false));
       if(b <= a){
         break; //b cut off
       }
     }
     return a;   
+  } else{
+
+    
+    for(i = 0; i < outcome.squares.length; i++){
+      childBoard = board.slice(0);
+      childBoard[outcome.squares[i]] = player;
+     
+      a = Math.max(a, AlphaBeta(levels-1,childBoard, a, b, player, false));
+      if(b <= a){
+        break; //b cut off
+      }
+    }
+    return a;   
+
+
+
+    
+  }
+
+
+
+
   }
 
   else{
 
+    if(leve1lSt===1){
+
+
+
     for(i = 0; i < outcome.squares.length; i++){
       childBoard = board.slice(0);
       childBoard[outcome.squares[i]] = 1-player;
-      b = Math.min(b, AlphaBeta(childBoard, a, b, player, true));
+      b = Math.min(b, AlphaBeta(levels-1,childBoard, a, b, player, true));
       if (b <= a){
         break; //a cut off
       }
     }
-    return b;
+    return b;  
+  }else{
+
+    for(i = 0; i < outcome.squares.length; i++){
+      childBoard = board.slice(0);
+      childBoard[outcome.squares[i]] = 1-player;
+      b = Math.min(b, AlphaBeta(levels-1,childBoard, a, b, player, true));
+      if (b <= a){
+        break; //a cut off
+      }
+    }
+    return b;  
+
   }
 
+
+
+
+
+  }
+
+  
 };
 
 
@@ -273,7 +332,7 @@ function AlphaBeta(board, a, b, player, maximizingPlayer){
 
 function Draw(){
  
-  ctx.fillStyle = "rgb(64,208,192)";
+  ctx.fillStyle = "#F3F3F3";
   ctx.fillRect(0, 0, pageW, pageH);  
 
   var i,j ;
@@ -367,32 +426,42 @@ var start=0;
 function p2(){ 
   twoPlayers=1;
   CreateCanvas(); SetCanvasSize(); Init() ; start=1; 
+  document.getElementById("close").style.opacity=1;
   
 }
 
 function hard(){ 
-  
+  leve1lSt=2;
   CreateCanvas(); SetCanvasSize(); Init() ; start=1; ;
+  document.getElementById("close").style.opacity=1;
+
   
 }
 
 function medium (){ 
-  
+  leve1lSt=1;
   CreateCanvas(); SetCanvasSize(); Init() ; start=1;
+  document.getElementById("close").style.opacity=1;
+
   
 }
 
 
 
 function easy(){ 
-  
+  leve1lSt=0;
   CreateCanvas(); SetCanvasSize(); Init() ; start=1; 
+  document.getElementById("close").style.opacity=1;
+
   
 }
 
 
 
+function close(){
 
+  document.getElementById('body').removeChild('canvas');
+}
 
 window.addEventListener('resize',()=>{ 
   if(start==1){
@@ -420,7 +489,9 @@ if(start==1){
 window.addEventListener('mousedown',(e)=>{
   if(start==1){
 if (gameStatus.winner !== null){ 
-  Init();} 
+  Init();
+
+} 
   else 
   if ( (playerTurn === 0 && twoPlayers==0 )|| twoPlayers==1 )
   { 
