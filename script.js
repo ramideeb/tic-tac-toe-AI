@@ -187,7 +187,7 @@ function AIMove(board, player){
 
 
   if(leve1lSt==2){
-    testAlphaBeta = AlphaBeta(4,testBoard, -999, 999, player, false);
+    testAlphaBeta = AlphaBeta(5,testBoard, -999, 999, player, false);
   }
   else if(leve1lSt==1){
     testAlphaBeta = AlphaBeta(3 ,testBoard, -999, 999, player, false);
