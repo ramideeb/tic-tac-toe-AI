@@ -14,15 +14,22 @@
 
 
 
-<body id="body" style="background-color:#F3F3F3; display: flex; align-items: center;">
+<body id="body" style="background-color:#F3F3F3; ">
 
 
-    <div class="container " id="starting">
+
+    <p id="score" style="z-index: 10000; margin-left: 40%; width: 20%; text-align: center; font-family: Arial, Helvetica, sans-serif;
+    font-size: 2em; position:absolute; top: 20px; opacity: 0;"> 
+    
+    <span id="xscore">0</span> - <span id="oscore">0</span> </p>
+
+    
+    <div class="container mt-5 " id="starting">
 <div class="row" >
 
-    <div class="col"></div>
+    <div class="col-lg-4"></div>
     <div class="col" style="text-align: center;"> <img width="40%" src="./logo.png" alt=""></div>
-    <div class="col"></div>
+    <div class="col-lg-4"></div>
 
 </div>
 
@@ -30,9 +37,9 @@
     <h1 style="text-align: center; width: 100%; font-family: 'Sniglet', cursive; font-weight:bolder; color: rgb(56, 56, 56);">Play Tic Tac Toe</h5>
 </div>
 <div class="row mt-3" style="text-align: center;">
-    <div class="col"></div>
+    <div class="col-lg-4"></div>
     <div class="col"><button onclick="p2()" style="width: 100%;" type="button" class="btn btn-secondary btn-lg"> Two Players </button> </div>
-    <div class="col"></div>
+    <div class="col-lg-4"></div>
 </div>
 
 <div class="row mt-3 ">
@@ -40,23 +47,23 @@
 </div>
 
 <div class="row mt-1" style="text-align: center;">
-    <div class="col"></div>
+    <div class="col-lg-4"></div>
     <div class="col"><button  onclick="hard()" style="width: 100%;" type="button" class="btn btn-danger btn-lg">Hard</button> </div>
-    <div class="col"></div>
+    <div class="col-lg-4"></div>
 </div>
 
 
 <div class="row mt-3" style="text-align: center;">
-    <div class="col"></div>
-    <div class="col"><button  onclick="medium()" style="width: 100%;" type="button" class="btn btn-success btn-lg">Meduim</button> </div>
-    <div class="col"></div>
+    <div class="col-lg-4"></div>
+    <div class="col"><button  onclick="medium()" style="width: 100%;" type="button" class="btn btn-success btn-lg">Medium</button> </div>
+    <div class="col-lg-4"></div>
 </div>
 
 
 <div class="row mt-3" style="text-align: center;">
-    <div class="col"></div>
-    <div class="col"><button onclick="easy()" style="width: 100%;" type="button" class="btn btn-info btn-lg">Easy</button> </div>
-    <div class="col"></div>
+    <div class="col-lg-4"></div>
+    <div class="col-lg-4"><button onclick="easy()" style="width: 100%;" type="button" class="btn btn-info btn-lg">Easy</button> </div>
+    <div class="col-lg-4"></div>
 </div>
 
 
@@ -70,12 +77,12 @@
 
 
 
-<a href=""><div id="close" style="position: absolute; top:5%; right: 5%; font-size: 3em; color: aliceblue;padding-bottom: 0.5%; font-weight: 900; background-color: black; width: 70px; height:70px;
+<a  href=""><div id="close" onclick="close()" style="position: absolute; top:5%; right: 5%; font-size: 1.5em; color: aliceblue; font-weight: 900; background-color: black; width: 70px; height:70px;
     border-radius: 50%; 
     z-index: 100;
     opacity: 0;
     text-align: center;   font-family: 'Courier New', Courier, monospace;">
-        x 
+       <p style="margin: 0; margin-top:15px; "> Back</p>
     </div>
     
     </a>

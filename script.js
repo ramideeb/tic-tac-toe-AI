@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
-
+var x=0,o=0;
 var twoPlayers = 0 ,leve1lSt,cvs,ctx;
 function CreateCanvas(){
   cvs = document.createElement('canvas');
@@ -16,7 +16,7 @@ var  boardSize, boardleft, boardtop, cellSize, celloffset;
 function resize(){
   cvs.width = window.innerWidth;
   cvs.height = window.innerHeight;
-  boardSize = Math.min(cvs.width, cvs.height) -100;
+  boardSize = Math.min(cvs.width, cvs.height) -200;
   cellSize = boardSize/3;
   celloffset = cellSize+5;
   boardleft = (cvs.width-boardSize)/2;
@@ -44,11 +44,30 @@ function Init(){
 function Insert(index,player){
   squares[index] = player;  
   gameStatus = isEnded(squares);
+
+
   if (gameStatus.winner === null){
     currentPlayer = 1 - currentPlayer;
     if (currentPlayer === 1 && twoPlayers==0){      
       AIMove(squares,currentPlayer);
     }
+  }
+  else{
+
+
+    if(gameStatus.winner===0){
+      console.log('x')
+      x=x+1
+      document.getElementById('xscore').innerHTML=x;
+
+    }
+    else if (gameStatus.winner===1) {
+     o=o+1;
+      console.log('o')
+      document.getElementById('oscore').innerHTML=o;
+    }
+
+
   }
   DrawAll();
 }
@@ -171,44 +190,33 @@ function ev(boarde){
 }
 
 function AIMove(board, player){
-  var outcomes = isEnded(board),
-      best,
-      bestAlphaBeta = -99999,
-      testAlphaBeta,
-      testBoard;
-
-  
-
-
+  var outcomes = isEnded(board),bestmove, bestscore = -99999, movescore;
   for(i = 0; i < outcomes.squares.length ; i++){     
-
-    testBoard = board.slice(0);
-    testBoard[outcomes.squares[i]] = player;
-
-
+    test = board.slice(0);
+    test[outcomes.squares[i]] = player;
   if(leve1lSt==2){
-    testAlphaBeta = AlphaBeta(6,testBoard, -999, 999, player, false);
+    movescore = AlphaBeta(6,test, -999, 999, player, false);
   }
   else if(leve1lSt==1){
-    testAlphaBeta = AlphaBeta(3 ,testBoard, -999, 999, player, false);
+    movescore = AlphaBeta(3 ,test, -999, 999, player, false);
   }
   else{
-    testAlphaBeta = AlphaBeta(0 ,testBoard, -999, 999, player, false);
+    movescore = AlphaBeta(0 ,test, -999, 999, player, false);
   }
 
-
-    if (testAlphaBeta > bestAlphaBeta){
-      best = outcomes.squares[i];
-      bestAlphaBeta = testAlphaBeta;
+    if (movescore > bestscore){
+      bestmove = outcomes.squares[i];
+      bestscore = movescore;
     }
 
   }
 
-  Insert(best,player);
+  Insert(bestmove,player);
 };
 
 function AlphaBeta(levels,board, a, b, player, maximizingPlayer){
-  var i,outcome = isEnded(board),childBoard;   
+  var i,
+  outcome = isEnded(board),childBoard;   
   if (outcome.winner !== null ){
 
     if (outcome.winner === player){ return 100; }
@@ -335,6 +343,7 @@ function p2(){
   CreateCanvas(); resize(); Init() ; start=1; 
   document.getElementById("close").style.opacity=1;
   document.getElementById('starting').style.display='none';
+  document.getElementById('score').style.opacity=1;
   
 }
 
@@ -343,6 +352,7 @@ function hard(){
   CreateCanvas(); resize(); Init() ; start=1; ;
   document.getElementById("close").style.opacity=1;
   document.getElementById('starting').style.display='none';
+  document.getElementById('score').style.opacity=1;
 
   
 }
@@ -353,7 +363,7 @@ function medium (){
   document.getElementById("close").style.opacity=1;
   document.getElementById('starting').style.display='none';
 
-  
+  document.getElementById('score').style.opacity=1;
 }
 
 function easy(){ 
@@ -361,7 +371,7 @@ function easy(){
   CreateCanvas(); resize(); Init() ; start=1; 
   document.getElementById("close").style.opacity=1;
   document.getElementById('starting').style.display='none';
-
+  document.getElementById('score').style.opacity=1;
   
 }
 
@@ -369,6 +379,7 @@ function close(){
 
   document.getElementById('body').removeChild('canvas');
   document.getElementById('starting').style.display='block';
+  document.getElementById('score').style.opacity=0;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 window.addEventListener('resize',()=>{ 
