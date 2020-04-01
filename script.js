@@ -149,48 +149,170 @@ function ev(boarde){
      (boarde[0]=== boarde[2] && boarde[1]===null) ||
      (boarde[1]=== boarde[2] && boarde[0]===null)){
 
-      if(boarde[0]===0){score+=10;}else{score-=10}
+      
+      if(boarde[2]==null){
+        if (boarde[0]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[1]==null){
+        if (boarde[0]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[0]==null){
+        if (boarde[1]===1){score+=10;}else{score-=10;}
+      }
+
+
+
   }
 
   if((boarde[3]=== boarde[4] && boarde[5]===null) ||
      (boarde[3]=== boarde[5] && boarde[4]===null) ||
      (boarde[4]=== boarde[5] && boarde[3]===null)){
 
-   if(boarde[0]===0){score+=10;}else{score-=10}
+      if(boarde[5]==null){
+        if (boarde[3]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[4]==null){
+        if (boarde[3]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[3]==null){
+        if (boarde[4]===1){score+=10;}else{score-=10;}
+      }
+
+
   }
 
   if((boarde[6]=== boarde[7] && boarde[8]===null) ||
      (boarde[6]=== boarde[8] && boarde[7]===null) ||
      (boarde[7]=== boarde[8] && boarde[6]===null)){
 
-  if(boarde[0]===0){score+=10;}else{score-=10}
+      if(boarde[8]==null){
+        if (boarde[6]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[7]==null){
+        if (boarde[6]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[6]==null){
+        if (boarde[7]===1){score+=10;}else{score-=10;}
+      }
+
+
   }
+
+  //////////////////////////////////////////
 
   if((boarde[0]=== boarde[3] && boarde[6]===null) ||
      (boarde[0]=== boarde[6] && boarde[3]===null) ||
      (boarde[3]=== boarde[6] && boarde[0]===null)){
 
-   if(boarde[0]===0){score+=10;}else{score-=10}
+      if(boarde[3]==null){
+        if (boarde[0]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[6]==null){
+        if (boarde[0]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[0]==null){
+        if (boarde[3]===1){score+=10;}else{score-=10;}
+      }
+
+
   }
 
   if((boarde[1]=== boarde[4] && boarde[7]===null) ||
      (boarde[1]=== boarde[7] && boarde[4]===null) ||
      (boarde[4]=== boarde[7] && boarde[1]===null)){
 
-  if(boarde[0]===0){score+=10;}else{score-=10}
+      if(boarde[7]==null){
+        if (boarde[1]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[4]==null){
+        if (boarde[1]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[1]==null){
+        if (boarde[4]===1){score+=10;}else{score-=10;}
+      }
+
+
   }
 
   if((boarde[2]=== boarde[5] && boarde[8]===null) ||
      (boarde[2]=== boarde[8] && boarde[5]===null) ||
      (boarde[5]=== boarde[8] && boarde[2]===null)){
 
-  if(boarde[0]===0){score+=10;}else{score-=10}
+      if(boarde[8]==null){
+        if (boarde[2]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[5]==null){
+        if (boarde[2]===1){score+=10;}else{score-=10;}
+      }
+      
+      if(boarde[2]==null){
+        if (boarde[5]===1){score+=10;}else{score-=10;}
+      }
+
+
   }
+////////////////////////////////////////////////////////
+if((boarde[0]=== boarde[4] && boarde[8]===null) ||
+   (boarde[0]=== boarde[8] && boarde[4]===null) ||
+   (boarde[8]=== boarde[4] && boarde[0]===null)){
+
+    if(boarde[8]==null){
+      if (boarde[0]===1){score+=10;}else{score-=10;}
+    }
+    
+    if(boarde[4]==null){
+      if (boarde[8]===1){score+=10;}else{score-=10;}
+    }
+    
+    if(boarde[8]==null){
+      if (boarde[4]===1){score+=10;}else{score-=10;}
+    }
+
+
+    }  
+
+
+
+
+
+  if((boarde[2]=== boarde[4] && boarde[6]===null) ||
+     (boarde[6]=== boarde[4] && boarde[2]===null) ||
+     (boarde[6]=== boarde[2] && boarde[4]===null)){
+
+  if(boarde[6]==null){
+    if (boarde[6]===1){score+=10;}else{score-=10;}
+  }
+  
+  if(boarde[2]==null){
+    if (boarde[6]===1){score+=10;}else{score-=10;}
+  }
+  
+  if(boarde[4]==null){
+    if (boarde[2]===1){score+=10;}else{score-=10;}
+  }
+
+
+  }
+
+
     return score;
 }
 
 function AIMove(board, player){
   var outcomes = isEnded(board),bestmove, bestscore = -99999, movescore;
+  
+  
   for(i = 0; i < outcomes.squares.length ; i++){     
     test = board.slice(0);
     test[outcomes.squares[i]] = player;
@@ -214,12 +336,12 @@ function AIMove(board, player){
   Insert(bestmove,player);
 };
 
-function AlphaBeta(levels,board, a, b, player, maximizingPlayer){
+function AlphaBeta(levels,board, a, b, player, max){
   var i,
   outcome = isEnded(board),childBoard;   
   if (outcome.winner !== null ){
 
-    if (outcome.winner === player){ return 100; }
+    if (outcome.winner === player){ return 1000; }
 
     else if (outcome.winner === 1-player){ return -100; }
 
@@ -232,14 +354,14 @@ function AlphaBeta(levels,board, a, b, player, maximizingPlayer){
   }
 
 
-  if (maximizingPlayer){
+  if (max){
 
     for(i = 0; i < outcome.squares.length; i++){
       childBoard = board.slice(0);
       childBoard[outcome.squares[i]] = player;
       a = Math.max(a, AlphaBeta(levels-1,childBoard, a, b, player, false));
       if(b <= a){
-        break; //b cut off
+        break; 
       }
     }
     return a;   
@@ -251,7 +373,7 @@ function AlphaBeta(levels,board, a, b, player, maximizingPlayer){
       childBoard[outcome.squares[i]] = 1-player;
       b = Math.min(b, AlphaBeta(levels-1,childBoard, a, b, player, true));
       if (b <= a){
-        break; //a cut off
+        break; 
       }
     }
     return b;  
